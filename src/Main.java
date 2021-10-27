@@ -1,24 +1,14 @@
+import Confidentiel.mdp;
+import Models.Requete;
+
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) throws SQLException {
-        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
-        Connection cnt = DriverManager.getConnection(url,"cappelli6u", mdp.mdp);
-
-        String req = "SELECT * FROM agence";
-
-        PreparedStatement agences = cnt.prepareStatement(req);
-
-
-        ResultSet rs = agences.executeQuery();
-
-        while(rs.next()) {
-            System.out.println(rs.getString(1));
-        }
-
-        rs.close();
-        cnt.close();
-        agences.close();
+        System.out.println(Requete.afficherListeVehicule("c3", "2015-10-02", "2015-10-07"));
     }
 }
