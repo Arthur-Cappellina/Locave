@@ -1,10 +1,9 @@
-import Models.Requete;
-import Views.VueBoutons;
-import Views.VueTitre;
+import Models.*;
+import Views.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.*;
+import java.sql.SQLException;
 
 public class Main {
 
