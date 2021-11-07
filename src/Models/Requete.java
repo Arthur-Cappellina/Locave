@@ -1,6 +1,6 @@
 package Models;
 
-import Confidentiel.mdp;
+//import Confidentiel.mdp;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,7 +13,8 @@ public class Requete {
     public static ArrayList<String> afficherListeVehicule(String categorie, String startDate, String endDate) throws SQLException {
         // Connexion
         String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
-        Connection cnt = DriverManager.getConnection(url,"cappelli6u", mdp.mdp);
+        Moi moi = new Moi();
+        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
 
         // On cree 2 requetes, une pour trouve les vehicules existant pour une categorie donnée et une autre pour savoir si ses vehicules sont libres
         String vehiculesRequetes = "SELECT * FROM vehicule where code_categ = ?";
@@ -85,4 +86,29 @@ public class Requete {
 
         return vehiculesDispo;
     }
+
+    public static ArrayList<String> affichageAgence() throws SQLException{
+
+        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
+        Moi moi = new Moi();
+        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
+
+        String agenceRequete = "SELECT code_ag FROM agence natural join vehicule natural join categorie";
+
+        ArrayList<String> Agences = new ArrayList<>();
+
+        return Agences;
+    }
+
+    /*public static int calcul_montant_location(String modele, String startDate, String endDate) throws SQLException {
+
+        int res = 0;
+        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
+        Moi moi = new Moi();
+        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
+
+        String
+
+        return res;
+    }*/
 }
