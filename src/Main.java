@@ -14,16 +14,20 @@ public class Main {
         vue.setPreferredSize(new Dimension(500,100));
 
         VueBoutons boutons = new VueBoutons();
-        boutons.setPreferredSize(new Dimension(500,500));
+        boutons.setPreferredSize(new Dimension(500,200));
+
+        VueTexte texte = new VueTexte();
+        texte.setPreferredSize(new Dimension(500, 300));
 
         JFrame frame = new JFrame("Jeu lumière");
-        frame.setPreferredSize(new Dimension(500,600));
+        frame.setPreferredSize(new Dimension(1000,600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel pan = (JPanel) frame.getContentPane();
         pan.setLayout(new BorderLayout());
         pan.add(vue, BorderLayout.NORTH);
         pan.add(boutons, BorderLayout.SOUTH);
+        pan.add(texte, BorderLayout.EAST);
 
         frame.pack();
         frame.setVisible(true);

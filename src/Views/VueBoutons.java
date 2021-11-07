@@ -14,7 +14,7 @@ public class VueBoutons extends JPanel implements ActionListener{
     //Requete requete = new Requete();
 
     public VueBoutons(){
-        setLayout(new GridLayout(5,1));
+        setLayout(new GridLayout(1,5));
         disponibilites = new JButton("Regarder les disponibilités");
         calculerMontantLocation = new JButton("Calculer montant location");
         miseAJourReservation = new JButton("Mise a jour réservation");
