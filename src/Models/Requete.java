@@ -87,28 +87,129 @@ public class Requete {
         return vehiculesDispo;
     }
 
-    public static ArrayList<String> affichageAgence() throws SQLException{
+    public static String affichageAgence() throws SQLException{
 
         String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
         Moi moi = new Moi();
         Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
 
-        String agenceRequete = "SELECT code_ag FROM agence natural join vehicule natural join categorie";
+        String res = "";
 
-        ArrayList<String> Agences = new ArrayList<>();
+        /*String agenceRequete = "select distinct agence.CODE_AG from AGENCE inner join VEHICULE on AGENCE.CODE_AG = VEHICULE.CODE_AG " +
+                "inner join CATEGORIE on VEHICULE.CODE_CATEG = CATEGORIE.CODE_CATEG where VEHICULE.CODE_CATEG = CATEGORIE.CODE_CATEG";
 
-        return Agences;
-    }
+        PreparedStatement agenceStt = cnt.prepareStatement(agenceRequete);
+        ResultSet rs = agenceStt.executeQuery();
 
-    /*public static int calcul_montant_location(String modele, String startDate, String endDate) throws SQLException {
+        while (rs.next()){
+            String code_ag = rs.getString("code_ag");
+            res = code_ag;
+        }
 
-        int res = 0;
-        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
-        Moi moi = new Moi();
-        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
+        agenceStt.close();
+        rs.close();
+        cnt.close();*/
+        String agenceRequete = "select distinct agence.CODE_AG from AGENCE inner join VEHICULE on AGENCE.CODE_AG = VEHICULE.CODE_AG ";
+        String categorieRequete = "select distinct code_categ from categorie";
+        String VerifCategorieRequete = "select code_categ from vehicule";
 
-        String
+        PreparedStatement agenceStt = cnt.prepareStatement(agenceRequete);
+        PreparedStatement categorieStt = cnt.prepareStatement(categorieRequete);
+        PreparedStatement VerifCategorieStt = cnt.prepareStatement(VerifCategorieRequete);
+
+        ResultSet rsAgence = agenceStt.executeQuery();
+        ResultSet rsCategorie = categorieStt.executeQuery();
+        ResultSet rsVerifCategorie = VerifCategorieStt.executeQuery();
+
+        ArrayList<String> listRsCategorie = new ArrayList<>();
+
+        while (rsCategorie.next()){
+            String categ = rsCategorie.getString("code_categ");
+            listRsCategorie.add(categ);
+        }
+
+        while (rsAgence.next()){
+            String codeAgence = rsAgence.getString("code_ag");
+            while (rsVerifCategorie.next()){
+                String codeCateg = rsVerifCategorie.getString("code_categ");
+                for (int i = 0; i < listRsCategorie.size(); i++) {
+                    if (codeCateg == listRsCategorie.get(i)){
+                        System.out.println(codeAgence);
+                    } else {
+                        System.out.println("pas d'agence ayant toutes les categories");
+                    }
+                }
+            }
+        }
+
+        /*for (int i = 0; i < listRsCategorie.size(); i++) {
+                agenceStt.setString(1, listRsCategorie.get(i));
+            }*/
 
         return res;
-    }*/
+    }
+
+    public static String affichageClient(String modele1, String modele2) throws SQLException {
+
+        String res = "";
+
+        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
+        Moi moi = new Moi();
+        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
+
+        String clientRequete = "select nom, ville, codpostal from CLIENT inner join dossier on dossier.CODE_CLI" +
+                " = CLIENT.CODE_CLI inner join VEHICULE on DOSSIER.NO_IMM = VEHICULE.NO_IMM where MODELE = ?";
+
+        PreparedStatement clientStt1 = cnt.prepareStatement(clientRequete);
+        PreparedStatement clientStt2 = cnt.prepareStatement(clientRequete);
+
+        if(modele1 != modele2) {
+            clientStt1.setString(1, modele1);
+            clientStt2.setString(1, modele2);
+        } else {
+            res = "les modeles sont les memes";
+            return res;
+        }
+
+        ResultSet rs1 = clientStt1.executeQuery();
+        ResultSet rs2 = clientStt2.executeQuery();
+
+        String res1 = "";
+        String res2 = "";
+        Boolean bool = true;
+        ArrayList<String> listRS1 = new ArrayList<>();
+        ArrayList<String> listRS2 = new ArrayList<>();
+
+        while(bool){
+            while (rs1.next()){
+                String client1nom = rs1.getString("nom");
+                String client1ville = rs1.getString("ville");
+                String client1codpostal = rs1.getString("codpostal");
+                res1 = client1nom + " " + client1ville + " " + client1codpostal;
+                listRS1.add(res1);
+            }
+            while (rs2.next()) {
+                String client2nom = rs2.getString("nom");
+                String client2ville = rs2.getString("ville");
+                String client2codpostal = rs2.getString("codpostal");
+                res2 = client2nom + " " + client2ville + " " + client2codpostal;
+                listRS2.add(res2);
+            }
+            bool = false;
+        }
+
+        for (String o: listRS1) {
+            if (listRS2.contains(o)){
+                res += o + "\n";
+            }
+        }
+
+        clientStt1.close();
+        clientStt2.close();
+        rs1.close();
+        rs2.close();
+        cnt.close();
+
+        return res;
+    }
 }

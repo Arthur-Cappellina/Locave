@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         Requete requete = new Requete();
 
-        VueTitre vue = new VueTitre();
+        /*VueTitre vue = new VueTitre();
         vue.setPreferredSize(new Dimension(500,100));
 
         VueBoutons boutons = new VueBoutons();
@@ -30,7 +30,9 @@ public class Main {
         pan.add(texte, BorderLayout.EAST);
 
         frame.pack();
-        frame.setVisible(true);
+        frame.setVisible(true);*/
         //System.out.println(Requete.afficherListeVehicule("c3", "2015-10-02", "2015-10-07"));
+        //System.out.println(Requete.affichageClient("saxo1.1", "twingo"));
+        System.out.println(Requete.affichageAgence());
     }
 }
