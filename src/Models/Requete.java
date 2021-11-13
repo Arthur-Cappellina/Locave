@@ -2,10 +2,9 @@ package Models;
 
 //import Confidentiel.mdp;
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public class Requete {
@@ -89,62 +88,65 @@ public class Requete {
 
     public static String affichageAgence() throws SQLException{
 
+        //Connection
         String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
         Moi moi = new Moi();
         Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
 
         String res = "";
+        /*Creation de 3 requetes
+        * Une pour compter le total des catégories existantes dans la table catégorie
+        * Une autre pour compter le nombre de catégories utilisées dans la table vehicule
+        * et enfin une requete pour selectionner les agences ayant un nombre de catégories donné*/
+        String categorieRequete = "select count(code_categ) from categorie";
+        String VehiculeCategorieRequete = "select count(code_categ) from VEHICULE group by CODE_CATEG";
+        String VehiculeRequete = "select CODE_AG from VEHICULE group by CODE_AG having count(distinct CODE_CATEG) = ?";
 
-        /*String agenceRequete = "select distinct agence.CODE_AG from AGENCE inner join VEHICULE on AGENCE.CODE_AG = VEHICULE.CODE_AG " +
-                "inner join CATEGORIE on VEHICULE.CODE_CATEG = CATEGORIE.CODE_CATEG where VEHICULE.CODE_CATEG = CATEGORIE.CODE_CATEG";
-
-        PreparedStatement agenceStt = cnt.prepareStatement(agenceRequete);
-        ResultSet rs = agenceStt.executeQuery();
-
-        while (rs.next()){
-            String code_ag = rs.getString("code_ag");
-            res = code_ag;
-        }
-
-        agenceStt.close();
-        rs.close();
-        cnt.close();*/
-        String agenceRequete = "select distinct agence.CODE_AG from AGENCE inner join VEHICULE on AGENCE.CODE_AG = VEHICULE.CODE_AG ";
-        String categorieRequete = "select distinct code_categ from categorie";
-        String VerifCategorieRequete = "select code_categ from vehicule";
-
-        PreparedStatement agenceStt = cnt.prepareStatement(agenceRequete);
+        //préparation de l'execution de la 1ère requete
         PreparedStatement categorieStt = cnt.prepareStatement(categorieRequete);
-        PreparedStatement VerifCategorieStt = cnt.prepareStatement(VerifCategorieRequete);
-
-        ResultSet rsAgence = agenceStt.executeQuery();
+        //execution de la requete comptant le nombre de categorie dans la table categorie
         ResultSet rsCategorie = categorieStt.executeQuery();
-        ResultSet rsVerifCategorie = VerifCategorieStt.executeQuery();
-
-        ArrayList<String> listRsCategorie = new ArrayList<>();
-
+        //stockage du nombre de categorie
+        int nbCateg = 0;
         while (rsCategorie.next()){
-            String categ = rsCategorie.getString("code_categ");
-            listRsCategorie.add(categ);
+            int n = rsCategorie.getInt("count(code_categ)");
+            nbCateg = n;
         }
 
-        while (rsAgence.next()){
-            String codeAgence = rsAgence.getString("code_ag");
-            while (rsVerifCategorie.next()){
-                String codeCateg = rsVerifCategorie.getString("code_categ");
-                for (int i = 0; i < listRsCategorie.size(); i++) {
-                    if (codeCateg == listRsCategorie.get(i)){
-                        System.out.println(codeAgence);
-                    } else {
-                        System.out.println("pas d'agence ayant toutes les categories");
-                    }
-                }
+        //préparation de l'execution de la 2ème requete
+        PreparedStatement VerifCategorieVehiculeStt = cnt.prepareStatement(VehiculeCategorieRequete);
+        //éxecution de la requete comptant le nombre de categorie inséré dans la table véhicule
+        ResultSet rsVerifCategorieVehicule = VerifCategorieVehiculeStt.executeQuery();
+        //stockage du nombre de categorie dans la table vehicule
+        int nbVerifCateg = 0;
+        while (rsVerifCategorieVehicule.next()){
+            nbVerifCateg += 1;
+        }
+
+        //préparation de l'execution de la 3ème requete
+        PreparedStatement VerifCategorieStt = cnt.prepareStatement(VehiculeRequete);
+        //On définit le nombre total de catégories
+        VerifCategorieStt.setInt(1, nbCateg);
+        //Execution de la requete qui a pour but de selectionner les agences selon le nombre de categories qu'elles possèdent
+        ResultSet rsVerifCategorie = VerifCategorieStt.executeQuery();
+        /*Vérification du nombre de catégorie
+        * si le nombre de type de catégories dans véhicule est égal au nombre total de catégorie dans catégorie
+        * alors on séléctionne les agences ayant ce nombre de catégories
+        * sinon on retourne une chaine indiquant qu'aucune agence ne possède toutes les catégories*/
+        if (nbVerifCateg == nbCateg) {
+            while (rsVerifCategorie.next()) {
+                String codeAgence = rsVerifCategorie.getString("code_ag");
+                res = codeAgence;
             }
+        } else {
+            res = "Aucune agence ne possede toutes les categories";
         }
 
-        /*for (int i = 0; i < listRsCategorie.size(); i++) {
-                agenceStt.setString(1, listRsCategorie.get(i));
-            }*/
+        categorieStt.close();
+        VerifCategorieStt.close();
+        rsCategorie.close();
+        rsVerifCategorie.close();
+        cnt.close();
 
         return res;
     }
@@ -157,12 +159,15 @@ public class Requete {
         Moi moi = new Moi();
         Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
 
+        //Création d'une requete qui selectionne les noms, villes et codes postales des clients selon le modèle de véhicule qu'ils possèdent
         String clientRequete = "select nom, ville, codpostal from CLIENT inner join dossier on dossier.CODE_CLI" +
                 " = CLIENT.CODE_CLI inner join VEHICULE on DOSSIER.NO_IMM = VEHICULE.NO_IMM where MODELE = ?";
 
+        //Préparation de 2 éxecutions de la meme requete
         PreparedStatement clientStt1 = cnt.prepareStatement(clientRequete);
         PreparedStatement clientStt2 = cnt.prepareStatement(clientRequete);
 
+        //Définition des différents modèles indiqués en paramètre si ces modèles sont différents
         if(modele1 != modele2) {
             clientStt1.setString(1, modele1);
             clientStt2.setString(1, modele2);
@@ -171,16 +176,20 @@ public class Requete {
             return res;
         }
 
+        //Exectution des 2 requetes selon leur modèle de vehicule chacune
         ResultSet rs1 = clientStt1.executeQuery();
         ResultSet rs2 = clientStt2.executeQuery();
 
         String res1 = "";
         String res2 = "";
         Boolean bool = true;
+        //Création de 2 listes contenant les valeurs séléctionnées de chaque execution
         ArrayList<String> listRS1 = new ArrayList<>();
         ArrayList<String> listRS2 = new ArrayList<>();
 
+        //Parcours des 2 exectutions en 1 seule fois
         while(bool){
+            //Parcours des 2 executions qui stocke chaque ligne parcouru dans leurs listes dédiées
             while (rs1.next()){
                 String client1nom = rs1.getString("nom");
                 String client1ville = rs1.getString("ville");
@@ -198,6 +207,9 @@ public class Requete {
             bool = false;
         }
 
+        /*Pour chaque element de la listRS1
+        * on verifie si la listRS2 contient les éléments de la liste listRS1
+        * si c'est le cas, alors la méthode retourne les éléments en question*/
         for (String o: listRS1) {
             if (listRS2.contains(o)){
                 res += o + "\n";
