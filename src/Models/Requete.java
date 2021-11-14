@@ -136,7 +136,7 @@ public class Requete {
         if (nbVerifCateg == nbCateg) {
             while (rsVerifCategorie.next()) {
                 String codeAgence = rsVerifCategorie.getString("code_ag");
-                res = codeAgence;
+                res = res + " " + codeAgence;
             }
         } else {
             res = "Aucune agence ne possede toutes les categories";
