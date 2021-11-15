@@ -1,3 +1,4 @@
+import Confidentiel.mdp;
 import Models.*;
 import Views.*;
 
@@ -8,31 +9,25 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) throws SQLException {
-        Requete requete = new Requete();
+        Requete requete = new Requete("cappelli6u", mdp.mdp);
+        requete.miseAJourCalendrier(false, "2015-10-24", "2015-10-27", "5213ye54");
 
-        /*VueTitre vue = new VueTitre();
+        VueTitre vue = new VueTitre();
         vue.setPreferredSize(new Dimension(500,100));
 
-        VueBoutons boutons = new VueBoutons();
-        boutons.setPreferredSize(new Dimension(500,200));
-
-        VueTexte texte = new VueTexte();
-        texte.setPreferredSize(new Dimension(500, 300));
+        VueCentre boutons = new VueCentre();
+        boutons.setPreferredSize(new Dimension(500,500));
 
         JFrame frame = new JFrame("Jeu lumière");
-        frame.setPreferredSize(new Dimension(1000,600));
+        frame.setPreferredSize(new Dimension(500,600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel pan = (JPanel) frame.getContentPane();
         pan.setLayout(new BorderLayout());
         pan.add(vue, BorderLayout.NORTH);
         pan.add(boutons, BorderLayout.SOUTH);
-        pan.add(texte, BorderLayout.EAST);
 
         frame.pack();
-        frame.setVisible(true);*/
-        //System.out.println(Requete.afficherListeVehicule("c3", "2015-10-02", "2015-10-07"));
-        //System.out.println(Requete.affichageClient("saxo1.1", "twingo"));
-        System.out.println(Requete.affichageAgence());
+        frame.setVisible(true);
     }
 }

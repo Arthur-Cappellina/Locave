@@ -9,12 +9,14 @@ import java.util.*;
 
 public class Requete {
 
-    public static ArrayList<String> afficherListeVehicule(String categorie, String startDate, String endDate) throws SQLException {
-        // Connexion
-        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
-        Moi moi = new Moi();
-        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
+    private Connection cnt;
 
+    public Requete(String user, String password) throws SQLException {
+        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
+        cnt = DriverManager.getConnection(url,user, password);
+    }
+
+    public ArrayList<String> afficherListeVehicule(String categorie, String startDate, String endDate) throws SQLException {
         // On cree 2 requetes, une pour trouve les vehicules existant pour une categorie donnée et une autre pour savoir si ses vehicules sont libres
         String vehiculesRequetes = "SELECT * FROM vehicule where code_categ = ?";
 
@@ -28,13 +30,7 @@ public class Requete {
         vehiculesStt.setString(1, categorie);
 
         // On recupere toutes les dates existantes entre 2 dates
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-        List<Date> totalDates = new ArrayList<>();
-        while (!start.isAfter(end)) {
-            totalDates.add(Date.valueOf(start));
-            start = start.plusDays(1);
-        }
+        ArrayList<Date> totalDates = (ArrayList<Date>) dateEntreJours(startDate, endDate);
 
         // Execution de la requete pour recupere les immatriculations disponibles
         ResultSet rs = vehiculesStt.executeQuery();
@@ -86,13 +82,38 @@ public class Requete {
         return vehiculesDispo;
     }
 
-    public static String affichageAgence() throws SQLException{
+    public void miseAJourCalendrier(boolean estDisponible, String startDate, String endDate, String immatriculation) throws SQLException {
 
-        //Connection
-        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
-        Moi moi = new Moi();
-        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
+        String nvResultat = " ";
+        if(estDisponible) nvResultat = null;
+        else nvResultat = "'x'";
 
+        Statement stmt = cnt.createStatement();
+
+        ArrayList<Date> dates = (ArrayList<Date>) dateEntreJours(startDate, endDate);
+
+        for(Date d : dates) {
+            String requete = "UPDATE calendrier set paslibre = " + nvResultat + " where no_imm = '" + immatriculation + "' and datejour = to_date('" + d + "','YYYY-MM-DD')";
+            System.out.println("Appel : " + requete);
+            stmt.executeQuery(requete);
+        }
+        cnt.close();
+        stmt.close();
+    }
+
+    public static List<Date> dateEntreJours(String debut, String fin){
+        LocalDate start = LocalDate.parse(debut);
+        LocalDate end = LocalDate.parse(fin);
+        List<Date> totalDates = new ArrayList<>();
+        while (!start.isAfter(end)) {
+            totalDates.add(Date.valueOf(start));
+            start = start.plusDays(1);
+        }
+        return totalDates;
+    }
+
+
+    public String affichageAgence() throws SQLException{
         String res = "";
         /*Creation de 3 requetes
         * Une pour compter le total des catégories existantes dans la table catégorie
@@ -151,13 +172,9 @@ public class Requete {
         return res;
     }
 
-    public static String affichageClient(String modele1, String modele2) throws SQLException {
+    public String affichageClient(String modele1, String modele2) throws SQLException {
 
         String res = "";
-
-        String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
-        Moi moi = new Moi();
-        Connection cnt = DriverManager.getConnection(url,"marzouk7u", moi.mdp);
 
         //Création d'une requete qui selectionne les noms, villes et codes postales des clients selon le modèle de véhicule qu'ils possèdent
         String clientRequete = "select nom, ville, codpostal from CLIENT inner join dossier on dossier.CODE_CLI" +
