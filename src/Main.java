@@ -8,8 +8,9 @@ import java.sql.SQLException;
 
 public class Main {
 
-    public static void main(String[] args) throws SQLException {
-        Requete requete = new Requete("cappelli6u", mdp.mdp);
+    public static void main(String[] args) throws SQLException{
+        //Moi moi = new Moi();
+        Requete requete = new Requete("marzouk7u", mdp.mdp);
         requete.miseAJourCalendrier(false, "2015-10-24", "2015-10-27", "5213ye54");
 
         VueTitre vue = new VueTitre();
@@ -29,5 +30,6 @@ public class Main {
 
         frame.pack();
         frame.setVisible(true);
+        //System.out.println(requete.afficherListeVehicule("c1", "2015-10-27", "2015-10-28"));
     }
 }
