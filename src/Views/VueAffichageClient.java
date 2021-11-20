@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 
-public class VueAffichageClient extends JPanel {
+public class VueAffichageClient extends Observateur {
 
     private String Smodele1, Smodele2;
     private JLabel JLmodele1, JLmodele2;
@@ -12,7 +12,10 @@ public class VueAffichageClient extends JPanel {
     private JTextArea TFres;
     private JButton OK;
 
+    public static final String NAME = "MiseAJour";
+
     public VueAffichageClient(){
+        name = NAME;
         setLayout(new GridLayout(2, 3));
 
         Smodele1 = "Selectionnez votre 1er modele";

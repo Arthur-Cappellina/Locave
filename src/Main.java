@@ -1,35 +1,54 @@
 import Confidentiel.mdp;
+import Controleurs.ControleurBouton;
 import Models.*;
 import Views.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Main {
 
     public static void main(String[] args) throws SQLException{
-        //Moi moi = new Moi();
-        Requete requete = new Requete("marzouk7u", mdp.mdp);
-        requete.miseAJourCalendrier(false, "2015-10-24", "2015-10-27", "5213ye54");
+        //  Moi moi = new Moi();
+        //  Requete requete = new Requete("cappelli6u", mdp.mdp);
+        //  System.out.println(requete.afficherListeVehicule("c3", "2015-10-02", "2015-10-05"));
+        //  requete.miseAJourCalendrier(false, "2015-10-02", "2015-10-05", "7418yc54");
+        //  System.out.println(requete.affichageClient("twingo", "xsara1.4sx"));
+        //  System.out.println(requete.afficherListeVehicule("c1", "2015-10-27", "2015-10-28"));--
 
-        VueTitre vue = new VueTitre();
-        vue.setPreferredSize(new Dimension(500,100));
+        // On cree le controleur qui va se charger des boutons
+        ControleurBouton cB = new ControleurBouton();
 
-        VueCentre boutons = new VueCentre();
-        boutons.setPreferredSize(new Dimension(500,500));
 
-        JFrame frame = new JFrame("Jeu lumière");
-        frame.setPreferredSize(new Dimension(500,600));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Bouton home
+        JButton homeButton = new JButton("Accueil");
+        homeButton.addActionListener(cB);
 
-        JPanel pan = (JPanel) frame.getContentPane();
-        pan.setLayout(new BorderLayout());
-        pan.add(vue, BorderLayout.NORTH);
-        pan.add(boutons, BorderLayout.SOUTH);
+        // Menu calcul location
 
-        frame.pack();
-        frame.setVisible(true);
-        //System.out.println(requete.afficherListeVehicule("c1", "2015-10-27", "2015-10-28"));
+        // Liste des panels
+        ArrayList<Observateur> panels = new ArrayList<>();
+
+        panels.add(new VueHome(cB));
+        panels.add(new VueAfficherVehicules(cB));
+        panels.add(new VueCalculLocation(cB));
+        panels.add(new VueAffichageClient());
+        panels.add(new VueAffichageAgence(cB));
+
+        // Creation de la vueTitre
+        VueTitre vueTitre = new VueTitre(homeButton);
+        vueTitre.setPreferredSize(new Dimension(500, 100));
+
+
+        // On cree la fentre qui va tout contenir
+        Fenetre f = new Fenetre("Locave", vueTitre, panels);
+
+        // Le modele qui va tout gerer
+        Modele m = new Modele(f);
+
+        // On definit le model au controleur
+        cB.setModele(m);
     }
 }

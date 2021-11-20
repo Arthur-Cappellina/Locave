@@ -77,7 +77,6 @@ public class Requete {
         resImmatriculation.close();
         vehiculesStt.close();
         vehiculesStt.close();
-        cnt.close();
 
         return vehiculesDispo;
     }
@@ -97,7 +96,6 @@ public class Requete {
             System.out.println("Appel : " + requete);
             stmt.executeQuery(requete);
         }
-        cnt.close();
         stmt.close();
     }
 
@@ -200,7 +198,6 @@ public class Requete {
         VerifCategorieStt.close();
         rsCategorie.close();
         rsVerifCategorie.close();
-        cnt.close();
 
         return res;
     }
@@ -270,7 +267,6 @@ public class Requete {
         clientStt2.close();
         rs1.close();
         rs2.close();
-        cnt.close();
 
         return res;
     }
