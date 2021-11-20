@@ -112,6 +112,39 @@ public class Requete {
         return totalDates;
     }
 
+    public int calculMontant(String modele, int nb_jours) throws SQLException{
+        int res = 0;
+        String tarifRequete = "select TARIF_JOUR, TARIF_HEBDO, TARIF_ASUR from TARIF inner join CATEGORIE C2 on TARIF.CODE_TARIF = C2.CODE_TARIF inner join VEHICULE V on C2.CODE_CATEG = V.CODE_CATEG\n" +
+                "    where MODELE = ?";
+
+        PreparedStatement tarifStt = cnt.prepareStatement(tarifRequete);
+
+        tarifStt.setString(1, modele);
+
+        ResultSet rsTarif = tarifStt.executeQuery();
+
+        while (rsTarif.next()){
+            int nb_semaine = 0;
+            int n1 = rsTarif.getInt("tarif_jour");
+            int n2 = rsTarif.getInt("tarif_hebdo");
+            int n3 = rsTarif.getInt("tarif_asur");
+            if (nb_jours < 7){
+                res = n1 * nb_jours;
+            } else {
+                int mod = nb_jours % 7;
+                if (mod == 0) {
+                    nb_semaine = nb_jours / 7;
+                    res = n2 * nb_semaine;
+                } else if (mod != 0){
+                    nb_semaine = (nb_jours - mod) / 7;
+                    int res_semaine = n2 * nb_semaine;
+                    int res_jour = n1 * mod;
+                    res = res_semaine + res_jour;
+                }
+            }
+        }
+        return res;
+    }
 
     public String affichageAgence() throws SQLException{
         String res = "";
