@@ -1,4 +1,4 @@
-import Confidentiel.mdp;
+
 import Controleurs.ControleurBouton;
 import Models.*;
 import Views.*;
@@ -16,9 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws SQLException{
         //  Moi moi = new Moi();
-         Requete requete = new Requete("cappelli6u", mdp.mdp);
         //  System.out.println(requete.afficherListeVehicule("c3", "2015-10-02", "2015-10-05"));
-         requete.miseAJourCalendrier(false, "2015-10-02", "2015-10-05", "7418yc54");
         //  System.out.println(requete.affichageClient("twingo", "xsara1.4sx"));
         //  System.out.println(requete.afficherListeVehicule("c1", "2015-10-27", "2015-10-28"));--
 

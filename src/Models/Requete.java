@@ -1,6 +1,5 @@
 package Models;
 
-import Confidentiel.mdp;
 import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.*;
@@ -105,7 +104,7 @@ public class Requete {
      * @param immatriculation Numéro d'immatriculation du véhicule
      * @throws SQLException
      */
-    public void miseAJourCalendrier(boolean estDisponible, String startDate, String endDate, String immatriculation) throws SQLException {
+    public boolean miseAJourCalendrier(boolean estDisponible, String startDate, String endDate, String immatriculation) throws SQLException {
 
         String nvResultat = " ";
         if(estDisponible) nvResultat = null;
@@ -115,12 +114,16 @@ public class Requete {
 
         ArrayList<Date> dates = (ArrayList<Date>) dateEntreJours(startDate, endDate);
 
+        int nbLignes = 0;
+
         for(Date d : dates) {
             String requete = "UPDATE calendrier set paslibre = " + nvResultat + " where no_imm = '" + immatriculation + "' and datejour = to_date('" + d + "','YYYY-MM-DD')";
             System.out.println("Appel : " + requete);
-            stmt.executeQuery(requete);
+            nbLignes += stmt.executeUpdate(requete);
         }
         stmt.close();
+
+        return dates.size() == nbLignes;
     }
 
     /**
@@ -249,7 +252,7 @@ public class Requete {
      * @return Une variable String contentant les clients en question
      * @throws SQLException
      */
-    public String affichageClient() throws SQLException{
+    /*public String affichageClient() throws SQLException{
 
         String res = "";
 
@@ -281,9 +284,9 @@ public class Requete {
         rsc.close();
 
         return res;
-    }
+    }*/
 
-    /*public String affichageClient(String modele1, String modele2) throws SQLException {
+    public String affichageClient(String modele1, String modele2) throws SQLException {
 
         String res = "";
 
@@ -333,12 +336,12 @@ public class Requete {
                 listRS2.add(res2);
             }
             bool = false;
-        }*/
+        }
 
         /*Pour chaque element de la listRS1
         * on verifie si la listRS2 contient les éléments de la liste listRS1
         * si c'est le cas, alors la méthode retourne les éléments en question*/
-        /*for (String o: listRS1) {
+        for (String o: listRS1) {
             if (listRS2.contains(o)){
                 res += o + "\n";
             }
@@ -350,5 +353,5 @@ public class Requete {
         rs2.close();
 
         return res;
-    }*/
+    }
 }
