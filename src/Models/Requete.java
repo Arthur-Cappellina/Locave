@@ -1,6 +1,8 @@
 package Models;
 
 import Confidentiel.mdp;
+import oracle.jdbc.proxy.annotation.Pre;
+
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -11,11 +13,25 @@ public class Requete {
 
     private Connection cnt;
 
+    /**
+     * Constructeur permettant à l'utilisateur de se connecter
+     * @param user Nom d'utilisateur
+     * @param password Mot de passe de l'utilisateur
+     * @throws SQLException
+     */
     public Requete(String user, String password) throws SQLException {
         String url = "jdbc:oracle:thin:@charlemagne.iutnc.univ-lorraine.fr:1521:infodb";
         cnt = DriverManager.getConnection(url,user, password);
     }
 
+    /**
+     * La méthode détermine la liste des véhicules selon une catégorie et la disponibilité d'une période
+     * @param categorie code de la catégorie
+     * @param startDate Date de début de période
+     * @param endDate Date de fin de période
+     * @return Liste des véhicules disponibles
+     * @throws SQLException
+     */
     public ArrayList<String> afficherListeVehicule(String categorie, String startDate, String endDate) throws SQLException {
         // On cree 2 requetes, une pour trouve les vehicules existant pour une categorie donnée et une autre pour savoir si ses vehicules sont libres
         String vehiculesRequetes = "SELECT * FROM vehicule where code_categ = ?";
@@ -81,6 +97,14 @@ public class Requete {
         return vehiculesDispo;
     }
 
+    /**
+     * La méthode exécute une mise à jour du calendrier des réservations pour une certaine période
+     * @param estDisponible boolean indiquant la disponibilité
+     * @param startDate Date de début du calendrier
+     * @param endDate Date de fin du calendrier
+     * @param immatriculation Numéro d'immatriculation du véhicule
+     * @throws SQLException
+     */
     public void miseAJourCalendrier(boolean estDisponible, String startDate, String endDate, String immatriculation) throws SQLException {
 
         String nvResultat = " ";
@@ -99,6 +123,12 @@ public class Requete {
         stmt.close();
     }
 
+    /**
+     * La méthode sélectionne les dates entre 2 dates données en paramètres
+     * @param debut date de début de liste
+     * @param fin date de fin de liste
+     * @return liste des dates
+     */
     public static List<Date> dateEntreJours(String debut, String fin){
         LocalDate start = LocalDate.parse(debut);
         LocalDate end = LocalDate.parse(fin);
@@ -110,6 +140,13 @@ public class Requete {
         return totalDates;
     }
 
+    /**
+     * La méthode calcul le montant d'une location d'un véhicule
+     * @param modele modèle de véhicule choisi
+     * @param nb_jours nombre de jours souhaités pour la location
+     * @return résultat du calcul en fonction des tarifs
+     * @throws SQLException
+     */
     public int calculMontant(String modele, int nb_jours) throws SQLException{
         int res = 0;
         String tarifRequete = "select TARIF_JOUR, TARIF_HEBDO, TARIF_ASUR from TARIF inner join CATEGORIE C2 on TARIF.CODE_TARIF = C2.CODE_TARIF inner join VEHICULE V on C2.CODE_CATEG = V.CODE_CATEG\n" +
@@ -144,6 +181,11 @@ public class Requete {
         return res;
     }
 
+    /**
+     * La méthode affiche les agences possédant toutes les catégories de véhicules
+     * @return Variable String contenant les agences en question
+     * @throws SQLException
+     */
     public String affichageAgence() throws SQLException{
         String res = "";
         /*Creation de 3 requetes
@@ -202,7 +244,46 @@ public class Requete {
         return res;
     }
 
-    public String affichageClient(String modele1, String modele2) throws SQLException {
+    /**
+     * La méthode affiche les clients selon le nombre de modèles en leur possession
+     * @return Une variable String contentant les clients en question
+     * @throws SQLException
+     */
+    public String affichageClient() throws SQLException{
+
+        String res = "";
+
+        //Création d'une requete qui selectionne les noms, villes et codes postales des clients selon le nombre de modèles qu'ils possèdent
+        String clientRequete = "select nom, ville, codpostal from CLIENT inner join dossier on dossier.CODE_CLI\n" +
+                "= CLIENT.CODE_CLI inner join VEHICULE on DOSSIER.NO_IMM = VEHICULE.NO_IMM group by nom, ville, CODPOSTAL\n" +
+                "having count(MODELE) = ?";
+
+        //Préparation de l'execution de la requete
+        PreparedStatement clientStt = cnt.prepareStatement(clientRequete);
+
+        //Définition du nombre de modèles (à 2 dans l'énoncé)
+        clientStt.setInt(1, 2);
+
+        //Execution de la requete
+        ResultSet rsc = clientStt.executeQuery();
+
+        //Parcours de l'execution qui incrémente l'attribut res au nom, ville et code postal du client à chaque itération
+        while (rsc.next()){
+
+            String nom = rsc.getString("nom");
+            String ville = rsc.getString("ville");
+            String codePostal = rsc.getString("codpostal");
+            String client = nom + " " + ville + " " + codePostal;
+            res += client + "\n";
+        }
+
+        clientStt.close();
+        rsc.close();
+
+        return res;
+    }
+
+    /*public String affichageClient(String modele1, String modele2) throws SQLException {
 
         String res = "";
 
@@ -252,12 +333,12 @@ public class Requete {
                 listRS2.add(res2);
             }
             bool = false;
-        }
+        }*/
 
         /*Pour chaque element de la listRS1
         * on verifie si la listRS2 contient les éléments de la liste listRS1
         * si c'est le cas, alors la méthode retourne les éléments en question*/
-        for (String o: listRS1) {
+        /*for (String o: listRS1) {
             if (listRS2.contains(o)){
                 res += o + "\n";
             }
@@ -269,5 +350,5 @@ public class Requete {
         rs2.close();
 
         return res;
-    }
+    }*/
 }
