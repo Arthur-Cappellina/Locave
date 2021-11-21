@@ -14,6 +14,12 @@ public class Fenetre extends JFrame {
 
     List<Observateur> obs;
 
+    /**
+     * Constructeur de la fenêtre d'application
+     * @param nom Nom de la fenêtre
+     * @param vueTitre JPanel du titre
+     * @param obs Liste des observateurs
+     */
     public Fenetre(String nom, VueTitre vueTitre, List<Observateur> obs){
         super(nom);
         setPreferredSize(new Dimension(500,600));
@@ -38,7 +44,12 @@ public class Fenetre extends JFrame {
 
     }
 
-
+    /**
+     * Méthode qui actualise la fenêtre actuelle
+     * @param name Nom de la fenêtre
+     * @param m Modèle
+     * @throws SQLException
+     */
     public void actualiser(String name, Modele m) throws SQLException {
         CardLayout card = (CardLayout) center.getLayout();
         card.show(center, name);

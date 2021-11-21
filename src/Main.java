@@ -67,6 +67,10 @@ public class Main {
         fenetreConnexion.setVisible(true);
     }
 
+    /**
+     * Méthode ayant pour but de démarrer l'application Locave
+     * @param requete Requête initialisée dans le main
+     */
     public static void startLocave(Requete requete){
         // On cree le controleur qui va se charger des boutons
         ControleurBouton cB = new ControleurBouton();
