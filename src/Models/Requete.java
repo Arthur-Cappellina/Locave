@@ -152,20 +152,25 @@ public class Requete {
      */
     public int calculMontant(String modele, int nb_jours) throws SQLException{
         int res = 0;
-        String tarifRequete = "select TARIF_JOUR, TARIF_HEBDO, TARIF_ASUR from TARIF inner join CATEGORIE C2 on TARIF.CODE_TARIF = C2.CODE_TARIF inner join VEHICULE V on C2.CODE_CATEG = V.CODE_CATEG\n" +
+
+        //Création de la requete qui devra sélectionner le tarif quotidien et hebdomadaire selon un modèle de véhicule
+        String tarifRequete = "select TARIF_JOUR, TARIF_HEBDO from TARIF inner join CATEGORIE C2 on TARIF.CODE_TARIF = C2.CODE_TARIF inner join VEHICULE V on C2.CODE_CATEG = V.CODE_CATEG\n" +
                 "    where MODELE = ?";
 
+        //Préparation de l'exécution de la 1ère requete
         PreparedStatement tarifStt = cnt.prepareStatement(tarifRequete);
 
+        //Définition du modèle donné en paramètre
         tarifStt.setString(1, modele);
 
+        //Exécution de la requête qui aura pour but de récupérer tarif_jour et tarif_hebdo à chaque ligne de la table
         ResultSet rsTarif = tarifStt.executeQuery();
 
+        //Parcours de l'exécution et qui incrémentera à la variable res le montant du calcul selon le modèle et le nombre de jours
         while (rsTarif.next()){
             int nb_semaine = 0;
             int n1 = rsTarif.getInt("tarif_jour");
             int n2 = rsTarif.getInt("tarif_hebdo");
-            int n3 = rsTarif.getInt("tarif_asur");
             if (nb_jours < 7){
                 res = n1 * nb_jours;
             } else {
