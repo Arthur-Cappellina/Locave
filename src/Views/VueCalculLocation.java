@@ -1,6 +1,7 @@
 package Views;
 
 import Controleurs.ControleurBouton;
+import Models.Modele;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +11,12 @@ public class VueCalculLocation extends Observateur {
 
 
     public static final String NAME = "Calcul";
+
+    private JTextField modeleField;
+
+    private JSpinner nombreDeJoursSpinner;
+
+    private JLabel reponse;
 
 
     public VueCalculLocation(ControleurBouton cB){
@@ -30,27 +37,27 @@ public class VueCalculLocation extends Observateur {
 
         JLabel modelTexte = new JLabel("Entrez votre modele : ");
 
-        JTextField field = new JTextField();
-        field.setColumns(5);
+        modeleField = new JTextField();
 
 
         inputs.add(new JPanel());
         inputs.add(new JPanel());
         inputs.add(modelTexte);
-        inputs.add(field);
+        inputs.add(modeleField);
 
         JLabel joursTexte = new JLabel("Entrez le nombre de jours : ");
 
-        JSpinner joursField = new JSpinner();
+        nombreDeJoursSpinner = new JSpinner();
 
         inputs.add(new JPanel());
         inputs.add(new JPanel());
         inputs.add(joursTexte);
-        inputs.add(joursField);
+        inputs.add(nombreDeJoursSpinner);
         inputs.add(new JPanel());
         inputs.add(new JPanel());
 
-        JButton rechercher = new JButton("Rechercher");
+        JButton rechercher = new JButton("Calculer montant");
+        rechercher.addActionListener(cB);
 
         inputs.add(new JPanel());
 
@@ -60,10 +67,20 @@ public class VueCalculLocation extends Observateur {
 
         JPanel answer = new JPanel();
 
-        JLabel lab = new JLabel("Reponse ici");
+        reponse = new JLabel("");
 
-        answer.add(lab);
+        answer.add(reponse);
         add(answer, BorderLayout.SOUTH);
 
+    }
+
+    @Override
+    public void actualiser(Modele m) {
+        System.out.println("Appel");
+        if(modeleField.getText().equals("")) return;
+
+        int res = m.calculerMontantLocation(modeleField.getText(),(Integer) nombreDeJoursSpinner.getValue());
+        if(res == -1) reponse.setText("Vous avez mal entrée les données");
+        else reponse.setText("Cela coutera : " + res);
     }
 }
