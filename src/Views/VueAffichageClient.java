@@ -1,37 +1,80 @@
 package Views;
 
+import Controleurs.ControleurBouton;
+import Models.Modele;
+
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class VueAffichageClient extends Observateur {
 
-    private String Smodele1, Smodele2;
-    private JLabel JLmodele1, JLmodele2;
-    private JTextField TFmodele1, TFmodele2;
-    private JTextArea TFres;
-    private JButton OK;
+    public static final String NAME = "AffichageClient";
 
-    public static final String NAME = "MiseAJour";
+    private JTextField modele1Field, modele2Field;
 
-    public VueAffichageClient(){
+    private JLabel reponse;
+
+
+    public VueAffichageClient(ControleurBouton cB){
         name = NAME;
-        setLayout(new GridLayout(2, 3));
+        JLabel label = new JLabel("Afficher les clients possédant 2 modèles de véhicules : ");
 
-        Smodele1 = "Selectionnez votre 1er modele";
-        Smodele2 = "Selectionnez votre 2eme modele";
-        JLmodele1 = new JLabel(Smodele1);
-        JLmodele2 = new JLabel(Smodele2);
-        TFmodele1 = new JTextField();
-        TFmodele2 = new JTextField();
-        TFres = new JTextArea();
-        OK = new JButton("OK");
+        label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
 
-        add(JLmodele1);
-        add(TFmodele1);
-        add(OK);
-        add(JLmodele2);
-        add(TFmodele2);
-        add(TFres);
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        setLayout(new BorderLayout());
+        add(label, BorderLayout.NORTH);
+
+        JPanel inputs = new JPanel();
+
+        inputs.setBorder(new EmptyBorder(10, 0, 10, 0));
+        inputs.setLayout(new GridLayout(6, 2));
+
+        JLabel modelTexte = new JLabel("Entrez votre modele : ");
+
+        modele1Field = new JTextField();
+
+        inputs.add(new JPanel());
+        inputs.add(new JPanel());
+        inputs.add(modelTexte);
+        inputs.add(modele1Field);
+
+        JLabel joursTexte = new JLabel("Entrez le nombre de jours : ");
+
+        modele2Field = new JTextField();
+
+        inputs.add(new JPanel());
+        inputs.add(new JPanel());
+        inputs.add(joursTexte);
+        inputs.add(modele2Field);
+        inputs.add(new JPanel());
+        inputs.add(new JPanel());
+
+        JButton rechercher = new JButton("Trouver clients");
+        rechercher.addActionListener(cB);
+
+        inputs.add(new JPanel());
+
+        inputs.add(rechercher);
+        add(inputs, BorderLayout.CENTER);
+
+
+        JPanel answer = new JPanel();
+
+        reponse = new JLabel("");
+
+        answer.add(reponse);
+        add(answer, BorderLayout.SOUTH);
+
+    }
+
+    @Override
+    public void actualiser(Modele m) {
+        System.out.println("Appel");
+        if(modele1Field.getText().equals("")) return;
+        reponse.setText(m.afficherClient(modele1Field.getText(), modele2Field.getText()));
     }
 }

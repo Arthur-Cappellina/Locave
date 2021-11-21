@@ -6,6 +6,7 @@ import Views.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class ControleurBouton implements ActionListener {
 
@@ -42,6 +43,8 @@ public class ControleurBouton implements ActionListener {
             modele.changeMenu(VueAffichageAgence.NAME);
         } else if(btn.getText().equals("Afficher la liste des clients qui ont loués deux modèle de voitures différentes")){
             modele.changeMenu(VueAffichageClient.NAME);
+        } else{
+            modele.actualiser();
         }
     }
 }

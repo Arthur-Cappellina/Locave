@@ -1,6 +1,7 @@
 package Views;
 
 import Controleurs.ControleurBouton;
+import Models.Modele;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -39,4 +40,8 @@ public class VueHome extends Observateur {
         this.buttons = buttons;
     }
 
+    @Override
+    public void actualiser(Modele m) {
+
+    }
 }

@@ -81,7 +81,7 @@ public class Requete {
         return vehiculesDispo;
     }
 
-    public void miseAJourCalendrier(boolean estDisponible, String startDate, String endDate, String immatriculation) throws SQLException {
+    public boolean miseAJourCalendrier(boolean estDisponible, String startDate, String endDate, String immatriculation) throws SQLException {
 
         String nvResultat = " ";
         if(estDisponible) nvResultat = null;
@@ -91,12 +91,16 @@ public class Requete {
 
         ArrayList<Date> dates = (ArrayList<Date>) dateEntreJours(startDate, endDate);
 
+        int nbLignes = 0;
+
         for(Date d : dates) {
             String requete = "UPDATE calendrier set paslibre = " + nvResultat + " where no_imm = '" + immatriculation + "' and datejour = to_date('" + d + "','YYYY-MM-DD')";
             System.out.println("Appel : " + requete);
-            stmt.executeQuery(requete);
+            nbLignes += stmt.executeUpdate(requete);
         }
         stmt.close();
+
+        return dates.size() == nbLignes;
     }
 
     public static List<Date> dateEntreJours(String debut, String fin){
